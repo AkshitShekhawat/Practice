@@ -3,4 +3,4 @@ create table authorities (username varchar_ignorecase(50) not null,authority var
 create unique index ix_auth_username on authorities (username,authority);
 
 -- we get this schema from the official source code of spring security
---  1. search on browser - spring security GitHub and search user.ddl and copy code 
+--  1. search on browser - spring security GitHub and search user.ddl and copy code
