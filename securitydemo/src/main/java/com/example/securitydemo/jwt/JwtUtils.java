@@ -18,9 +18,9 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-public class JetUtils {
+public class JwtUtils {
     //Getting JWT Form Header
-    public static final Logger logger = LoggerFactory.getLogger(JetUtils.class);
+    public static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${spring.app.jwtSecret}")
     private String jwtSecret;
