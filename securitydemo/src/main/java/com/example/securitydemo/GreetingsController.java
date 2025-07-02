@@ -29,7 +29,7 @@ public class GreetingsController {
     @Autowired
     private JwtUtils jwtUtils;
 
-    //@Autowired
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @GetMapping("/hello")
@@ -75,10 +75,11 @@ public class GreetingsController {
         then we need to store the authentication in the security context for that we are going to use
         security context...
         */
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        //Now I can generate the Token form username
+
         String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
 
         List<String> roles = userDetails.getAuthorities().stream()
