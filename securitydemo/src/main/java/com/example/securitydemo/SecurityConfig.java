@@ -1,5 +1,7 @@
 package com.example.securitydemo;
 
+import com.example.securitydemo.jwt.AuthEntryPointJwt;
+import com.example.securitydemo.jwt.AuthTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
 
@@ -29,18 +32,30 @@ public class SecurityConfig {
     @Autowired
     DataSource dataSource;
 
+    @Autowired
+    private AuthEntryPointJwt unauthorizedHandler;
+
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
+    }
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)
-                requests.requestMatchers("/h2-console/**").permitAll().anyRequest()).authenticated());
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-       //http.formLogin(Customizer.withDefaults());
-        http.httpBasic(Customizer.withDefaults());
-        http.headers(headers ->
-                headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
-        http.csrf(AbstractHttpConfigurer::disable);
-        //http.csrf(csrf -> csrf.disable());
-        return (SecurityFilterChain)http.build();
+        http.authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests.requestMatchers("/h2-console/**").permitAll().requestMatchers("/signin").permitAll()
+                        .anyRequest().authenticated());
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+        http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
+        //http.httpBasic(withDefaults());
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
+        http.csrf(csrf -> csrf.disable());
+        http.addFilterBefore(authenticationJwtTokenFilter(),
+                UsernamePasswordAuthenticationFilter.class);
+
+
+        return http.build();
     }
 
     //configure In Memory Authentication with spring boot
