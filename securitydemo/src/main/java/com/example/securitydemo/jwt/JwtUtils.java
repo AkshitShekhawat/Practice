@@ -37,12 +37,12 @@ public class JwtUtils {
         return null;
     }
     //Generating Token From Username
-    public String generateTokenFormUsername(UserDetails userDetails){
+    public String generateTokenFromUsername(UserDetails userDetails) {
         String username = userDetails.getUsername();
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date((new Date().getTime() + jwtExpirationMs)))
+                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key())
                 .compact();
     }
